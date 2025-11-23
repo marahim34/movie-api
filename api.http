@@ -1,0 +1,84 @@
+@base = http://localhost:3000
+
+### Getting all movies
+GET {{base}}/movies
+
+### Getting movies filtered by year
+GET {{base}}/movies?year=2010
+
+### Getting movies filtered by director
+GET {{base}}/movies?director=Christopher%20Nolan
+
+### Getting movies filtered by title and year (combined filters)
+GET {{base}}/movies?title=matrix&year=1999
+
+
+### Getting a movie (existing id)
+GET {{base}}/movies/2
+
+### Getting a movie (non-existing id -> 404)
+GET {{base}}/movies/9999
+
+### Getting a movie (invalid id -> 400)
+GET {{base}}/movies/abc
+
+
+### Posting a movie (valid -> 201)
+POST {{base}}/movies
+Content-Type: application/json
+
+{ 
+    "title": "The Shawshank Redemption", 
+    "director": "Frank Darabont", 
+    "year": 1994 
+}
+
+### Posting a movie (invalid: missing year -> 400)
+POST {{base}}/movies
+Content-Type: application/json
+
+{ 
+    "title": "Missing Year Movie", 
+    "director": "Some Director"
+}
+
+
+### Updating a movie (valid -> 200)
+PUT {{base}}/movies/5
+Content-Type: application/json
+
+{ 
+    "title": "The Shawshank___Redemption", 
+    "director": "Frank Darabont", 
+    "year": 1994 
+}
+
+### Updating a movie (invalid body -> 400)
+PUT {{base}}/movies/5
+Content-Type: application/json
+
+{ 
+    "title": "No Year Here", 
+    "director": "Frank Darabont"
+}
+
+### Updating a movie (non-existing id -> 404)
+PUT {{base}}/movies/9999
+Content-Type: application/json
+
+{ 
+    "title": "Does Not Exist", 
+    "director": "Nobody", 
+    "year": 2010 
+}
+
+
+### Deleting a movie (existing id -> 204)
+DELETE {{base}}/movies/4
+
+### Deleting a movie (non-existing id -> 404)
+DELETE {{base}}/movies/9999
+
+
+### Catch-all route (unknown path -> 404)
+GET {{base}}/this-route-does-not-exist
