@@ -14,7 +14,7 @@ GET {{base}}/movies?title=matrix&year=1999
 
 
 ### Getting a movie (existing id)
-GET {{base}}/movies/2
+GET {{base}}/movies/692a2eb6a5248037b06acdb1
 
 ### Getting a movie (non-existing id -> 404)
 GET {{base}}/movies/9999
@@ -44,11 +44,11 @@ Content-Type: application/json
 
 
 ### Updating a movie (valid -> 200)
-PUT {{base}}/movies/5
+PUT {{base}}/movies/692a2ec6a5248037b06acdb2
 Content-Type: application/json
 
 { 
-    "title": "The Shawshank___Redemption", 
+    "title": "The Shawshank_+_Redemption", 
     "director": "Frank Darabont", 
     "year": 1994 
 }
@@ -74,7 +74,7 @@ Content-Type: application/json
 
 
 ### Deleting a movie (existing id -> 204)
-DELETE {{base}}/movies/4
+DELETE {{base}}/movies/692ac54678ef0b5a5919d031
 
 ### Deleting a movie (non-existing id -> 404)
 DELETE {{base}}/movies/9999
@@ -82,3 +82,14 @@ DELETE {{base}}/movies/9999
 
 ### Catch-all route (unknown path -> 404)
 GET {{base}}/this-route-does-not-exist
+
+
+### Posting movie
+POST {{base}}/movies
+Content-Type: application/json
+
+{
+  "title": "The Dark Knight",
+  "director": "Christopher Nolan",
+  "year": 2008
+}
