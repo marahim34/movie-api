@@ -4,12 +4,12 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import moviesRouter from "./routes/movies.js";
 import { initDatabase } from "./config/dbConfig.js";
-
+import authenticationRouter from "./routes/authentication.js"
 // Loading .env
 dotenv.config();
 
 // Initalizing database
-const moviesCollection = await initDatabase();
+await initDatabase();
 
 // Starting the server
 const app = express();
@@ -18,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("dev"));
 app.use("/movies", moviesRouter);
+app.use("/auth", authenticationRouter)
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not Found: route does not exist" });

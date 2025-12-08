@@ -1,95 +1,143 @@
-@base = http://localhost:3000
+@baseUrl = http://localhost:3000
+# After logging in, paste your JWT token here:
+@token = SECRET_JWT_TOKEN
 
-### Getting all movies
-GET {{base}}/movies
+############################################################
+# 0. AUTH: SIGNUP & LOGIN
+############################################################
 
-### Getting movies filtered by year
-GET {{base}}/movies?year=2010
-
-### Getting movies filtered by director
-GET {{base}}/movies?director=Christopher%20Nolan
-
-### Getting movies filtered by title and year (combined filters)
-GET {{base}}/movies?title=matrix&year=1999
-
-
-### Getting a movie (existing id)
-GET {{base}}/movies/692a2eb6a5248037b06acdb1
-
-### Getting a movie (non-existing id -> 404)
-GET {{base}}/movies/9999
-
-### Getting a movie (invalid id -> 400)
-GET {{base}}/movies/abc
-
-
-### Posting a movie (valid -> 201)
-POST {{base}}/movies
+# 0.1 SIGNUP (create a new user)
+# - Run this once for a new username
+# - Expected: 201 Created (or 409 if username exists)
+POST {{baseUrl}}/auth/signup
 Content-Type: application/json
-
-{ 
-    "title": "The Shawshank Redemption", 
-    "director": "Frank Darabont", 
-    "year": 1994 
-}
-
-### Posting a movie (invalid: missing year -> 400)
-POST {{base}}/movies
-Content-Type: application/json
-
-{ 
-    "title": "Missing Year Movie", 
-    "director": "Some Director"
-}
-
-
-### Updating a movie (valid -> 200)
-PUT {{base}}/movies/692a2ec6a5248037b06acdb2
-Content-Type: application/json
-
-{ 
-    "title": "The Shawshank_+_Redemption", 
-    "director": "Frank Darabont", 
-    "year": 1994 
-}
-
-### Updating a movie (invalid body -> 400)
-PUT {{base}}/movies/5
-Content-Type: application/json
-
-{ 
-    "title": "No Year Here", 
-    "director": "Frank Darabont"
-}
-
-### Updating a movie (non-existing id -> 404)
-PUT {{base}}/movies/9999
-Content-Type: application/json
-
-{ 
-    "title": "Does Not Exist", 
-    "director": "Nobody", 
-    "year": 2010 
-}
-
-
-### Deleting a movie (existing id -> 204)
-DELETE {{base}}/movies/692ac54678ef0b5a5919d031
-
-### Deleting a movie (non-existing id -> 404)
-DELETE {{base}}/movies/9999
-
-
-### Catch-all route (unknown path -> 404)
-GET {{base}}/this-route-does-not-exist
-
-
-### Posting movie
-POST {{base}}/movies
-Content-Type: application/json
+Accept: application/json
 
 {
-  "title": "The Dark Knight",
-  "director": "Christopher Nolan",
-  "year": 2008
+  "username": "testuser1",
+  "password": "password123"
 }
+
+###
+
+# 0.2 LOGIN (get JWT token)
+# - Copy "token" from the response and paste into @token above
+# - Expected: 200 OK with { "token": "..." }
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "testuser1",
+  "password": "password123"
+}
+
+###
+
+############################################################
+# 1. GET all movies (optionally filtered)  [PUBLIC]
+############################################################
+
+# 1.1 All movies
+GET {{baseUrl}}/movies
+Accept: application/json
+
+###
+
+# 1.2 Filtered by year
+GET {{baseUrl}}/movies?year=2010
+Accept: application/json
+
+###
+
+# 1.3 Filtered by director
+GET {{baseUrl}}/movies?director=Christopher%20Nolan
+Accept: application/json
+
+###
+
+############################################################
+# 2. GET single movie by ID 
+############################################################
+
+GET {{baseUrl}}/movies/692a2eb6a5248037b06acdb1
+Accept: application/json
+
+###
+
+############################################################
+# 3. CREATE new movie (POST /movies)  [PROTECTED]
+############################################################
+
+# 3.1 Valid movie
+POST {{baseUrl}}/movies
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJpYXQiOjE3NjUxNTQ2NjUsImV4cCI6MTc2NTE1ODI2NX0.EIuSEAPtkBkhDEBs6XEb0pBv3ZF85hPz0MLGKL72_9g
+
+{
+  "title": "The Shawshank Redemption",
+  "director": "Frank Darabont",
+  "year": 1994
+}
+
+###
+
+# 3.2 Invalid movie (missing year)
+POST {{baseUrl}}/movies
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJpYXQiOjE3NjUxNTQ2NjUsImV4cCI6MTc2NTE1ODI2NX0.EIuSEAPtkBkhDEBs6XEb0pBv3ZF85hPz0MLGKL72_9g
+
+{
+  "title": "Missing Movie",
+  "director": "Director"
+}
+
+###
+
+# 3.3 Create movie WITHOUT token
+POST {{baseUrl}}/movies
+Content-Type: application/json
+Accept: application/json
+
+{
+  "title": "Should Fail Without Token",
+  "director": "No Auth",
+  "year": 2024
+}
+
+###
+
+############################################################
+# 4. UPDATE existing movie (PUT /movies/:id) 
+############################################################
+PUT {{baseUrl}}/movies/69361f942b63c18fba3a6349
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJpYXQiOjE3NjUxNTQ2NjUsImV4cCI6MTc2NTE1ODI2NX0.EIuSEAPtkBkhDEBs6XEb0pBv3ZF85hPz0MLGKL72_9g
+
+{
+  "title": "The Shawshank Redemption (Edited)",
+  "director": "Frank Darabont",
+  "year": 1994
+}
+
+###
+
+############################################################
+# 5. DELETE movie (DELETE /movies/:id)  [PROTECTED]
+############################################################
+
+DELETE {{baseUrl}}/movies/6934d727a1db7b1b3b257203
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJ0ZXN0dXNlcjEiLCJpYXQiOjE3NjUxNTQ2NjUsImV4cCI6MTc2NTE1ODI2NX0.EIuSEAPtkBkhDEBs6XEb0pBv3ZF85hPz0MLGKL72_9g
+
+###
+
+############################################################
+# 6. CATCH-ALL route
+############################################################
+
+GET {{baseUrl}}/this-route-does-not-exist
+Accept: application/json

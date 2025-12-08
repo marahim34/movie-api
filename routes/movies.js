@@ -8,6 +8,7 @@ import {
 } from "../controllers/moviesController.js";
 import { validateMovie } from "../middleware/validateMovie.js";
 import { logger } from "../middleware/logger.js";
+import { authenticateToken } from "../middleware/authenticateToken.js";
 
 // Create router
 const moviesRouter = Router();
@@ -15,9 +16,9 @@ const moviesRouter = Router();
 // Defining endpoints
 moviesRouter.get("/", logger, getMovies)
 moviesRouter.get("/:id", logger, getMovieById)
-moviesRouter.post("/", logger, validateMovie, createMovie)
-moviesRouter.put("/:id", logger, validateMovie, updateMovie)
-moviesRouter.delete("/:id", logger, deleteMovie)
+moviesRouter.post("/", authenticateToken, validateMovie, createMovie)
+moviesRouter.put("/:id", authenticateToken, validateMovie, updateMovie)
+moviesRouter.delete("/:id", authenticateToken, deleteMovie)
 
 
 export default moviesRouter;
